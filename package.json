@@ -1,0 +1,19 @@
+{
+    "name": "advent-of-code",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "dependencies": {
+        "nodemon": "^2.0.6"
+    },
+    "devDependencies": {
+        "bs-platform": "^8.3.3"
+    },
+    "scripts": {
+        "clean": "bsb -clean-world",
+        "build": "bsb -make-world",
+        "watch": "bsb -make-world -w"
+    },
+    "author": "",
+    "license": "ISC"
+}
