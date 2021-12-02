@@ -3,14 +3,14 @@
 RESTORE_PATH=$(pwd)
 date=$(date '+%Y-%m-%dT%H-%M-%S')
 
-case $2 in
+case $1 in
     dev)
-        echo "> nodemon $1/lib/js/src/day$2/$2.js src/day$2/example.txt"
-        nodemon $1/lib/js/src/day$2/$2.js src/day$2/example.txt
+        echo "> nodemon lib/js/src/day$1/$1.js src/day$1/example.txt"
+        nodemon lib/js/src/day$1/$1.js src/day$1/example.txt
         ;;
     *)
-        echo "> node $1/lib/js/src/day$2/$2.js src/day$2/input.txt"
-        node $1/lib/js/src/day$2/$2.js src/day$2/input.txt
+        echo "> node lib/js/src/day$1/$1.js src/day$1/input.txt"
+        node lib/js/src/day$1/$1.js src/day$1/input.txt
 
 esac
 
