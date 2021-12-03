@@ -3,7 +3,7 @@
 RESTORE_PATH=$(pwd)
 date=$(date '+%Y-%m-%dT%H-%M-%S')
 
-case $1 in
+case $2 in
     dev)
         echo "> nodemon lib/js/src/day$1/$1.js src/day$1/example.txt"
         nodemon lib/js/src/day$1/$1.js src/day$1/example.txt
