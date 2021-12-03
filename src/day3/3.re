@@ -5,21 +5,19 @@ let parser = () => {
   |> Js.String.split("\n");
 };
 
-let count = ((zeros, ones), value) =>
-  value == "1" ? (zeros, ones + 1) : (zeros + 1, ones);
-let inv = value => value == "1" ? "0" : "1";
+let binToDec = bin => int_of_string("0B" ++ bin);
 
-let convertNum = (num: string, toBase: int): string => {
-  let v = int_of_string(num);
-  Js.Int.toStringWithRadix(v, ~radix=toBase);
-};
+let toBin =
+  fun
+  | true => "0"
+  | false => "1";
 
-let checkAllPositions = arrayBinaries => {
-  let initialState =
-    Belt.Array.make(
-      arrayBinaries->Belt.Array.getUnsafe(0)->String.length,
-      (0, 0),
-    );
+let mostCommon = ((zeros, ones)) => (zeros > ones)->toBin;
+let leastCommon = ((zeros, ones)) => (!(zeros > ones))->toBin;
+
+let calculateRepetitions = (arrayBinaries, initialState) => {
+  let count = ((zeros, ones), value) =>
+    value == "1" ? (zeros, ones + 1) : (zeros + 1, ones);
 
   arrayBinaries->Belt.Array.reduce(initialState, (acc, value) => {
     acc->Belt.Array.mapWithIndex((index, acc) => {
@@ -28,39 +26,51 @@ let checkAllPositions = arrayBinaries => {
     })
   });
 };
+
 let part1 = (input: array(Js.String.t)) => {
+  let initialState =
+    Belt.Array.make(input->Belt.Array.getUnsafe(0)->String.length, (0, 0));
+
+  let repetitions = input->calculateRepetitions(initialState);
   let gammaRate =
-    checkAllPositions(input)
-    ->Belt.Array.map(((zeros, ones)) => {zeros > ones ? "0" : "1"})
-    ->Js.Array2.joinWith("");
+    repetitions->Belt.Array.map(mostCommon)->Js.Array2.joinWith("");
 
   let epsilonRate =
-    Js.Array2.fromMap(Js.String2.castToArrayLike(gammaRate), x => x)
-    ->Js.Array.map(inv, _)
-    ->Js.Array2.joinWith("");
+    repetitions->Belt.Array.map(leastCommon)->Js.Array2.joinWith("");
 
-  int_of_string("0B" ++ gammaRate) * int_of_string("0B" ++ epsilonRate);
+  gammaRate->binToDec * epsilonRate->binToDec;
 };
 
 let part2 = (input: array(Js.String.t)) => {
-  let rec find = (array: array(Js.String.t), index: int, inverted) =>
-    if (array->Belt.Array.length == 1) {
-      array->Belt.Array.getUnsafe(0);
-    } else {
-      let (zeros, ones) =
-        checkAllPositions(array)->Belt.Array.getUnsafe(index);
-      let toFilter = zeros > ones ? "0" : "1";
-      let toFilter = inverted ? inv(toFilter) : toFilter;
-      let newArr =
-        array->Belt.Array.keep(v => v->Js.String.get(index) == toFilter);
+  let initialState =
+    Belt.Array.make(input->Belt.Array.getUnsafe(0)->String.length, (0, 0));
 
-      find(newArr, index + 1, inverted);
+  let rec find =
+          (
+            array: array(Js.String.t),
+            index: int,
+            decideZeroOne: ((int, int)) => string,
+          ) =>
+    switch (array->Belt.Array.length) {
+    | 1 => array->Belt.Array.getUnsafe(0)
+    | _ =>
+      let repetitionSelected =
+        array
+        ->calculateRepetitions(initialState)
+        ->Belt.Array.getUnsafe(index);
+
+      let newArr =
+        array->Belt.Array.keep(v =>
+          v->Js.String.get(index) == decideZeroOne(repetitionSelected)
+        );
+
+      find(newArr, index + 1, decideZeroOne);
     };
 
-  let ogr = find(input, 0, false);
-  let co2 = find(input, 0, true);
+  let oxygenGeneratorRating = find(input, 0, mostCommon);
+  let co2ScrubberRating = find(input, 0, leastCommon);
 
-  int_of_string("0B" ++ ogr) * int_of_string("0B" ++ co2);
+  oxygenGeneratorRating->binToDec * co2ScrubberRating->binToDec;
 };
 
 Js.log("3_1. " ++ string_of_int(part1(parser())));
