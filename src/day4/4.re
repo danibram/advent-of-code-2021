@@ -1,5 +1,3 @@
-exception IndexOutOfBounds;
-
 module Bingo = {
   module Value = {
     type t =
