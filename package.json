@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "dependencies": {
-        "nodemon": "^2.0.6"
+        "nodemon": "^2.0.15"
     },
     "devDependencies": {
         "bs-platform": "^8.3.3"
